@@ -1,0 +1,20 @@
+
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Atmel Studio Solution File, Format Version 11.00
+Project("463AA9AD-4B79-45F4-8AC1-609C7F3EA5B4") = "MazeGame_AtmelStudio_C", "MazeGame_AtmelStudio_C.cppproj", "332E38FD-BEA0-4698-8C54-5FE2FE4AE733"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|AVR = Debug|AVR
+		Release|AVR = Release|AVR
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		332E38FD-BEA0-4698-8C54-5FE2FE4AE733.Debug|AVR.ActiveCfg = Debug|AVR
+		332E38FD-BEA0-4698-8C54-5FE2FE4AE733.Debug|AVR.Build.0 = Debug|AVR
+		332E38FD-BEA0-4698-8C54-5FE2FE4AE733.Release|AVR.ActiveCfg = Release|AVR
+		332E38FD-BEA0-4698-8C54-5FE2FE4AE733.Release|AVR.Build.0 = Release|AVR
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal 
