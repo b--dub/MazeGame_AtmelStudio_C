@@ -123,10 +123,16 @@ boolean goingOffTheDisplay();
 boolean goingToHitSomething();
 void movePlayerForward();
 void movePlayerBack();
+void movePlayerXBack();
+void movePlayerYBack();
 void moveDisplayForward();
+void moveDisplayXForward();
+void moveDisplayYForward();
 boolean inMiddleOfDisplay();
 boolean movingFurtherFromMiddle();
 boolean movingToANewSpace();
 void preventSticking();
+void preventXSticking();
+void preventYSticking();
 
 #endif /* SKETCH_H_ */

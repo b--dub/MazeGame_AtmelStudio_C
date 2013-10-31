@@ -4,15 +4,15 @@
  
 /************************************************************  
 DO NOT MODIFY 
-Automatically Generated On 2013-10-27 12-52-PM by pre-build98 
+Automatically Generated On 2013-10-30 11-47-PM by pre-build98 
 *************************************************************/ 
  
 #if defined(BUILDINFO_RAM) 
-static const char* BUILD_DATE = "2013-10-27 12-52-PM"; 
+static const char* BUILD_DATE = "2013-10-30 11-47-PM"; 
 #elif defined(BUILDINFO_EEMEM) 
-static const char BUILD_DATE[HeaderMsgSize] EEMEM = "2013-10-27 12-52-PM"; 
+static const char BUILD_DATE[HeaderMsgSize] EEMEM = "2013-10-30 11-47-PM"; 
 #elif defined(BUILDINFO_PROGMEM) 
-static const char BUILD_DATE[] PROGMEM = "2013-10-27 12-52-PM"; 
+static const char BUILD_DATE[] PROGMEM = "2013-10-30 11-47-PM"; 
 #endif 
  
 /* Return the header message */  

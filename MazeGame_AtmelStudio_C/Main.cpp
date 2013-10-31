@@ -21,7 +21,6 @@ void setup() {
 	pinMode(clockPin, OUTPUT);
 			
 	if (debugModeOn) Serial.begin(115200);
-	Serial.begin(9600);
 
 	randomSeed(analogRead(0));
   
@@ -89,6 +88,7 @@ void mazeGame() {
 		// Five degrees worth of play before accelerometer kicks in
 		if (abs(xOrientation) > 5) xinc = constrain(-xOrientation / 100.0f, -1, 1); 
 		if (abs(yOrientation) > 5) yinc = constrain(yOrientation / 100.0f, -1, 1);
+		
 		adjustDisplayForMovement();
   }
 }
@@ -160,27 +160,40 @@ void adjustDisplayForMovement() {
 		//  Moving the display forward (relative to the board) while moving the player back
 		//  relative to the display gives the effect of looking forward into the unseen 
 		//  area of the board, while not progressing the player forward onto the next space
-		moveDisplayForward();
-		movePlayerBack();
+		if ((display[(int)(x)][(int)(y+yinc)] == 'X') &&
+		((y<4 && ((y+yinc)<y)) || (y>=6 && ((y+yinc)>y)))) {
+			movePlayerYBack();
+			moveDisplayYForward();
+		}
+		else if ((int)y==1 || (int)y==8) moveDisplayYForward();
+		
+		if ((display[(int)(x+xinc)][(int)(y)] == 'X') &&
+		((x<4 && ((x+xinc)<x)) || (x>=6 && ((x+xinc)>x)))) {
+			movePlayerXBack();
+			moveDisplayXForward();
+		}
+		else if ((int)x==1 || (int)x==8) moveDisplayXForward();
 	}
 	else if (goingOffTheDisplay() && !goingToHitSomething()) {
-		
 		moveDisplayForward();
 	}
 	else if (!goingOffTheDisplay() && goingToHitSomething() && inMiddleOfDisplay()) {
-		//if ((int)(x+xinc)==(int)x) x+=xinc; 
-		//if ((int)(y+yinc)==(int)y) y+=yinc; 
-		
 		preventSticking();
-		return;		
 	}
 	else if (!goingOffTheDisplay() && goingToHitSomething() && !inMiddleOfDisplay()) 
 	{		
-		if (movingFurtherFromMiddle()) {
-			moveDisplayForward();
-			movePlayerBack();
+		if ((display[(int)(x)][(int)(y+yinc)] == 'X') &&
+		((y<4 && ((y+yinc)<y)) || (y>=6 && ((y+yinc)>y)))) {
+			movePlayerYBack();
+			moveDisplayYForward();
 		}
-		else preventSticking();
+		else preventYSticking();
+		if ((display[(int)(x+xinc)][(int)(y)] == 'X') &&
+		((x<4 && ((x+xinc)<x)) || (x>=6 && ((x+xinc)>x)))) {
+			movePlayerXBack();
+			moveDisplayXForward();
+		}
+		else preventXSticking();
 	}
 	else movePlayerForward();
 	
@@ -219,22 +232,60 @@ void movePlayerForward() {
 // Moving the player backwards requires a full 1 or -1 space move, otherwise the move could 
 // register as not changing spaces, and the player could be overwritten by a wall!
 void movePlayerBack() {
+	movePlayerXBack();
+	movePlayerYBack();
+}
+
+void movePlayerXBack() {
 	if ((int)(x+xinc)!=(int)x) x -= 2*(xinc==fabs(xinc))-1;
+	else x += xinc;
+}
+
+void movePlayerYBack() {
 	if ((int)(y+yinc)!=(int)y) y -= 2*(yinc==fabs(yinc))-1;
+	else y += yinc;
 }
 
 // Moving the display also requires using a full 1 or -1, as there are no partial spaces
 void moveDisplayForward() {
-	if ((int)(x+xinc)!=(int)x) xpos += 2*(xinc==fabs(xinc))-1;
-	if ((int)(y+yinc)!=(int)y) ypos += 2*(yinc==fabs(yinc))-1;
+	moveDisplayXForward();
+	moveDisplayYForward();
 	
 	// TODO fix here for too fast scrolling from edge 
 }
 
-void preventSticking() {
+void moveDisplayXForward() {
+	if ((int)(x+xinc)!=(int)x) xpos += 2*(xinc==fabs(xinc))-1;
+	if ((int)(x+xinc)==(int)x) x+=xinc;		// add increment if not going to cause movement
 	
+	// TODO fix here for too fast scrolling from edge
 }
 
+void moveDisplayYForward() {
+	if ((int)(y+yinc)!=(int)y) ypos += 2*(yinc==fabs(yinc))-1;
+	if ((int)(y+yinc)==(int)y) y+=yinc;
+	
+	// TODO fix here for too fast scrolling from edge
+}
+
+// For the case that we are trying to move diagonally to a taken spot, but could still
+// move up/down or left/right without hitting anything, let's do that instead
+void preventSticking() {
+	preventXSticking();
+	preventYSticking();
+}
+
+void preventXSticking() {
+	if (display[(int)(x+xinc)][(int)(y)] != 'X' && x+xinc<9 && x+xinc >=1)
+	x += xinc;
+}
+
+void preventYSticking() {
+	if (display[(int)(x)][(int)(y+yinc)] != 'X' && y+yinc<9 && y+yinc >=1)
+	y += yinc;
+}
+
+// Gets bit weights from rows and columns arrays to match 595 outs and 8x8s ins
 void writeToRegisters(int row, int column) {
   int tmp = (25308 - rows[row]) + columns[column];
   for (int i=0; i<16; ++i) {
