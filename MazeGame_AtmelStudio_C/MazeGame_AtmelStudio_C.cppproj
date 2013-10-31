@@ -169,30 +169,14 @@
     <PostBuildEvent>..\scripts\postbuild.bat "$(MSBuildProjectFullPath)" "$(MSBuildProjectName)" "$(OutputFileName)$(OutputFileExtension)" $(avrdevice) $(Configuration) "$(MSBuildProjectFile)" "$(SolutionDir)" "$(MSBuildProjectDirectory)\"</PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Main.cpp">
+    <Compile Include="MazeGame.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Sketch.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="Utility\BuildDate.cpp">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="Utility\BuildInfo.cpp">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="Utility\Buildinfo.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="Utility\BuildNumber.cpp">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="Utility\UtilityMacros.h">
+    <Compile Include="MazeGame.h">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Utility" />
     <Folder Include="Scripts" />
   </ItemGroup>
   <ItemGroup>

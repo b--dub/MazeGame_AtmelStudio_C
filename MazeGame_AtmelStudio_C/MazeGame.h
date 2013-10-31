@@ -1,5 +1,5 @@
 /*
- * Sketch.h
+ * MazeGame.h
  *
  * Created: 10/25/2013 7:47:50 PM
  * Using Atmel Studio 6.1 with Arduino Template Express
@@ -7,19 +7,11 @@
  */
 
 
-#ifndef SKETCH_H_
-#define SKETCH_H_
+#ifndef MAZEGAME_H_
+#define MAZEGAME_H_
 
 #ifndef Arduino_h
 #include <Arduino.h>
-#endif
-
-#ifndef UTILITY_MACROS_H_
-#include "Utility\UtilityMacros.h"
-#endif
-
-#ifndef BUILDINFO_H_
-#include "Utility/Buildinfo.h"
 #endif
 
 #include <string.h>
@@ -135,4 +127,4 @@ void preventSticking();
 void preventXSticking();
 void preventYSticking();
 
-#endif /* SKETCH_H_ */
+#endif /* MAZEGAME_H_ */

@@ -1,1 +1,0 @@
-C:\Arduino\hardware\tools\avr\etc\avrdude.conf

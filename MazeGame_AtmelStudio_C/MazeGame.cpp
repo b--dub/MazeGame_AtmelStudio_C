@@ -1,5 +1,5 @@
 /*
- * Main.cpp
+ * MazeGame.cpp
  *
  * Created: 10/25/2013 7:47:50 PM 
  * Using Atmel Studio 6.1 with Arduino Template Express
@@ -8,8 +8,8 @@
 
 
 
-#ifndef SKETCH_H_
-#include "Sketch.h"
+#ifndef MAZEGAME_H_
+#include "MazeGame.h"
 #endif
 
 //#pragma message "Sketch Running At: " XSTR(F_CPU) " HZ"
@@ -21,60 +21,11 @@ void setup() {
 	pinMode(clockPin, OUTPUT);
 			
 	if (debugModeOn) Serial.begin(115200);
-
-	randomSeed(analogRead(0));
-  
-#if defined(ENABLE_TEXT_MESSAGE)
-	ShowBuildInfo();
-#endif	
-
 }
 
 void loop() {
-	//randomMovement();
-	//randomMovementWithTilt();
-	//tiltControl();
+	// TODO maybe add intro or sound or something here
 	mazeGame();
-}
-
-
-// randomly adds or subtracts one from X and Y values to move around the display
-void randomMovement() {
-	x += (random(3) - 1); y += (random(3) - 1);
-	if (x<1) x=1; if (x>8) x=8;
-	if (y<1) y=1; if (y>8) y=8;
-	writeToRegisters(x, y);
-	delay(100);
-}
-
-// random movement with added "tilt" from orientation
-void randomMovementWithTilt() {
-	setOrientation();
-
-	x += (random(3) - 1); y += (random(3) - 1);
-
-	if (abs(xOrientation) > 5) x -= xOrientation / 25.0f;
-	if (abs(yOrientation) > 5) y += yOrientation / 25.0f;
-
-	if (x<1) x=1; if (x>8) x=8;
-	if (y<1) y=1; if (y>8) y=8;
-
-	writeToRegisters(x, y);
-	delay(10);
-}
-
-// Just moves the dot by tilt for testing purposes
-void tiltControl() {
-	setOrientation();
-
-	if (abs(xOrientation) > 5) x -= xOrientation / 50.0f;
-	if (abs(yOrientation) > 5) y += yOrientation / 50.0f;
-
-	if (x<1) x=1; if (x>8) x=8;
-	if (y<1) y=1; if (y>8) y=8;
-
-	writeToRegisters(x, y);
-	fps(1500);
 }
 
 void mazeGame() {
