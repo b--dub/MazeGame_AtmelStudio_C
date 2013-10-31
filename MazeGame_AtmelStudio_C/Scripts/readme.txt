@@ -1,3 +1,9 @@
+****************
+All these Script directory files are created by Arduino Template Express for Atmel Studio 6.1.  Unless you are using this IDE and plugin, you don't need any of this stuff.
+****************
+
+
+
 Sketch Structure Information
 --------------------------------
 The sketch contains two directories to support the included out of the box functionality.
