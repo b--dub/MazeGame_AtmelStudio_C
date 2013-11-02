@@ -169,6 +169,9 @@
     <PostBuildEvent>..\scripts\postbuild.bat "$(MSBuildProjectFullPath)" "$(MSBuildProjectName)" "$(OutputFileName)$(OutputFileExtension)" $(avrdevice) $(Configuration) "$(MSBuildProjectFile)" "$(SolutionDir)" "$(MSBuildProjectDirectory)\"</PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="board.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="MazeGame.cpp">
       <SubType>compile</SubType>
     </Compile>

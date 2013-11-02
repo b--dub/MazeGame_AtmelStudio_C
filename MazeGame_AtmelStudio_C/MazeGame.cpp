@@ -41,13 +41,13 @@ void mazeGame() {
 
 // Get the starting point for player from board[][] and establish frame location for display
 void findStart() {
-  for (unsigned int i=0; i<40; ++i) {
-    for (unsigned int j=0; j<40; ++j) {
-      if (board[i][j]=='S') {
-        xpos=i-x; ypos=j-y;
-      }
-    }
-  }
+	for (int i=0; i<BOARD_WIDTH; ++i) {
+		for (int j=0; j<BOARD_HEIGHT; ++j) {
+			if (getCharFromPROGMEM(i,j)=='S') {
+				xpos=i-x; ypos=j-y;
+			}
+		}
+	}
 }
 
 // look at board and relative positions to map our 8x8 display area
@@ -56,10 +56,10 @@ void drawScreen() {
 	
 	for (int i=0; i<10; ++i) {
 		for (int j=0; j<10; ++j) {
-			if (xpos+i<0 || xpos+i>39 || ypos+j<0 || ypos+j>39)
-				display[i][j]='X';
-			else if (board[xpos+i][ypos+j] == 'X')
-				display[i][j]='X';
+			if (xpos+i<0 || xpos+i>BOARD_HEIGHT-1 || ypos+j<0 || ypos+j>BOARD_WIDTH-1)
+			display[i][j]='X';
+			else if (getCharFromPROGMEM(xpos+i,ypos+j)=='X')
+			display[i][j]='X';
 		}
 	}
 	drawPlayer();
@@ -91,7 +91,7 @@ void adjustDisplayForMovement() {
 	//  First, is this move going to mean that our player is going to be going to a new space?
 	//  Because we're using floats for the player's position it is possible we haven't accrued
 	//  enough forward moves yet to call for moving onto a new space
-	if (!movingToANewSpace) {
+	if (!(movingToANewSpace)) {
 		movePlayerForward();
 	}
 	else if (goingOffTheDisplay() && goingToHitSomething()) {
@@ -113,7 +113,6 @@ void adjustDisplayForMovement() {
 		else if ((int)x==1 || (int)x==8) moveDisplayXForward();
 	}
 	else if (goingOffTheDisplay() && !goingToHitSomething()) {
-		// TODO fix fast scrolling problem
 		moveDisplayForward();
 	}
 	else if (!goingOffTheDisplay() && goingToHitSomething() && inMiddleOfDisplay()) {
@@ -182,8 +181,6 @@ void movePlayerYBack() {
 void moveDisplayForward() {
 	moveDisplayXForward();
 	moveDisplayYForward();
-	
-	// TODO fix here for too fast scrolling from edge 
 }
 
 void moveDisplayXForward() {
@@ -202,8 +199,6 @@ void moveDisplayYForward() {
 		else y -= 1-yinc;
 	}
 	if ((int)(y+yinc)==(int)y) y+=yinc;
-	
-	// TODO fix here for too fast scrolling from edge
 }
 
 // For the case that we are trying to move diagonally to a taken spot, but could still
@@ -269,7 +264,11 @@ int orient(int n) {
 	  return constrain(n,-90,90);
 }
 
-// TODO need to revisit this function
+char getCharFromPROGMEM(int i, int j) {
+	char* ptr = (char*)pgm_read_word(&(board[i]));		// get ptr to row i in PROGMEM (first char of String[i])
+	return (char)pgm_read_byte(ptr+j);					// get char at j in PROGMEM column in that row
+}
+
 void fps(long usecs) {      // factors in frame rate for refreshing screen by subtracting difference in current and last
                             // time recorded from desired refresh delay; usecs = desired delay, micro() gives time since
                             // uC was started last in useconds; for delays longer than 16ms use delay();
