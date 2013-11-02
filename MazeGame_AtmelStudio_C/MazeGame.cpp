@@ -6,13 +6,9 @@
  * Author: Brad Walsh
  */
 
-
-
 #ifndef MAZEGAME_H_
 #include "MazeGame.h"
 #endif
-
-//#pragma message "Sketch Running At: " XSTR(F_CPU) " HZ"
 
  
 void setup() {
@@ -20,7 +16,7 @@ void setup() {
 	pinMode(latchPin, OUTPUT);
 	pinMode(clockPin, OUTPUT);
 			
-	if (debugModeOn) Serial.begin(115200);
+	if (debugModeOn) Serial.begin(9600);
 }
 
 void loop() {
@@ -30,7 +26,6 @@ void loop() {
 
 void mazeGame() {
 	findStart();
-	Serial.end();
 	while(true) {
 		drawScreen();
 		writeScreen();
@@ -59,8 +54,6 @@ void findStart() {
 void drawScreen() {
 	memset(display, 0, sizeof(display));		// Clear out the display storage array
 	
-	//logScreen();
-	
 	for (int i=0; i<10; ++i) {
 		for (int j=0; j<10; ++j) {
 			if (xpos+i<0 || xpos+i>39 || ypos+j<0 || ypos+j>39)
@@ -70,7 +63,7 @@ void drawScreen() {
 		}
 	}
 	drawPlayer();
-	logScreen();
+	if (debugModeOn) logScreen();
 }
 
 //  Mark where the player is currently located on the display so we can light his led
@@ -84,23 +77,17 @@ void writeScreen() {
 		for (int j=1; j<9; ++j) {
 			if (display[i][j]) {
 				writeToRegisters(i,j);
-				delayMicroseconds(1);		// The longer the delay here, the longer each LED is held HIGH
+				delayMicroseconds(20);		// The longer the delay here, the longer each LED is held HIGH
 			}
 		}
-		writeToRegisters((int)x,(int)y);	// Make sure the player LED is brightest
-		delayMicroseconds(100);
 	}
-	fps(3000);
+	writeToRegisters((int)x,(int)y);		// Make sure the player LED is brightest
+	delayMicroseconds(200);
+	fps(2000);								// this number and the two above delays probably need a 
+											// little more tweaking, but good enough for now
 }
 
 void adjustDisplayForMovement() {
-	Serial.println(xpos);			// TODO switch these to lprintf or something
-	Serial.println(ypos);			// Don't want them to slow program down unless in DEBUG session
-	Serial.println(x);
-	Serial.println(y);
-	Serial.println(xinc);
-	Serial.println(yinc);
-	
 	//  First, is this move going to mean that our player is going to be going to a new space?
 	//  Because we're using floats for the player's position it is possible we haven't accrued
 	//  enough forward moves yet to call for moving onto a new space
@@ -126,6 +113,7 @@ void adjustDisplayForMovement() {
 		else if ((int)x==1 || (int)x==8) moveDisplayXForward();
 	}
 	else if (goingOffTheDisplay() && !goingToHitSomething()) {
+		// TODO fix fast scrolling problem
 		moveDisplayForward();
 	}
 	else if (!goingOffTheDisplay() && goingToHitSomething() && inMiddleOfDisplay()) {
@@ -168,20 +156,13 @@ boolean inMiddleOfDisplay() {
 	return (x>=4 && x<6 && y>=4 && y<6);
 }
 
-boolean movingFurtherFromMiddle() {
-	return ((x<4  && (int)(x+xinc)<(int)x) || 
-			(x>=6 && (int)(x+xinc)>(int)x) ||
-			(y<4  && (int)(y+yinc)<(int)y) ||
-			(y>=6 && (int)(y+yinc)>(int)y) ); 
-}
-
 void movePlayerForward() {
 	x += xinc;
 	y += yinc;
 }
 
 // Moving the player backwards requires a full 1 or -1 space move, otherwise the move could 
-// register as not changing spaces, and the player could be overwritten by a wall!
+// register as not changing spaces, and the player could be overwritten by a barrier!
 void movePlayerBack() {
 	movePlayerXBack();
 	movePlayerYBack();
@@ -206,14 +187,20 @@ void moveDisplayForward() {
 }
 
 void moveDisplayXForward() {
-	if ((int)(x+xinc)!=(int)x) xpos += 2*(xinc==fabs(xinc))-1;
+	if ((int)(x+xinc)!=(int)x) {
+		xpos += 2*(xinc==fabs(xinc))-1;
+		if (xinc<0) x += 1+xinc;			// prevent fast scrolling at edges of display
+		else x -= 1-xinc;
+	}
 	if ((int)(x+xinc)==(int)x) x+=xinc;		// add increment if not going to cause movement
-	
-	// TODO fix here for too fast scrolling from edge
 }
 
 void moveDisplayYForward() {
-	if ((int)(y+yinc)!=(int)y) ypos += 2*(yinc==fabs(yinc))-1;
+	if ((int)(y+yinc)!=(int)y) {
+		ypos += 2*(yinc==fabs(yinc))-1;
+		if (yinc<0) y += 1+yinc;
+		else y -= 1-yinc;
+	}
 	if ((int)(y+yinc)==(int)y) y+=yinc;
 	
 	// TODO fix here for too fast scrolling from edge
@@ -236,21 +223,16 @@ void preventYSticking() {
 	y += yinc;
 }
 
-// Gets bit weights from rows and columns arrays to match 595 outs and 8x8s ins
+// Gets bit weights from rows[] and columns[] to match 595 outs and 8x8s ins
 void writeToRegisters(int row, int column) {
-  int tmp = (25308 - rows[row]) + columns[column];
-  for (int i=0; i<16; ++i) {
-    digitalWrite(dataPin, (tmp & (1 << i)) ? 0 : 1);    // change "? 0 : 1" to "? 1 : 0" to switch HIGHs and LOWs
-    digitalWrite(clockPin, HIGH);
-    digitalWrite(clockPin, LOW);
-
-    lprintf("Bit %d: %d  clockPin cycled", i, (tmp & (1 << i)) ? 0 : 1);   // repeat switch if made above to depict in debugging console
-  }
-
-  digitalWrite(latchPin, HIGH);
-  digitalWrite(latchPin, LOW);
-
-  lprintf("latchPin Cycled");
+	int tmp = (25308 - rows[row]) + columns[column];
+	for (int i=0; i<16; ++i) {
+		digitalWrite(dataPin, (tmp & (1 << i)) ? 0 : 1);
+		digitalWrite(clockPin, HIGH);
+		digitalWrite(clockPin, LOW);
+	}
+	digitalWrite(latchPin, HIGH);
+	digitalWrite(latchPin, LOW);
 }
 
 
@@ -287,30 +269,14 @@ int orient(int n) {
 	  return constrain(n,-90,90);
 }
 
-// Logging print formatted = printf() to Serial
-void lprintf(char *fmt, ... ) {        //  Source:  http://playground.arduino.cc/Main/Printf
-	if (debugModeOn) {
-		char tmp[128];                       //  resulting string limited to 128 chars
-		va_list args;
-		va_start (args, fmt );
-		vsnprintf(tmp, 128, fmt, args);
-		va_end (args);
-
-		logCounter++;
-		Serial.print("Arduino serial log entry ");  
-		Serial.print(logCounter);
-		Serial.print(":  ");
-		Serial.println(tmp);
-	}
-}
-
 // TODO need to revisit this function
 void fps(long usecs) {      // factors in frame rate for refreshing screen by subtracting difference in current and last
                             // time recorded from desired refresh delay; usecs = desired delay, micro() gives time since
                             // uC was started last in useconds; for delays longer than 16ms use delay();
-	  long tmp = usecs - ((long)micros() - time);
+	  unsigned long tmp = (unsigned long)usecs - (micros() - (unsigned long)time);
 	  if ( tmp < 0) tmp = 0;
 	  delayMicroseconds((unsigned int)tmp);
+	  lprintf("fps: %ld | timeLast: %ld | timeNow: %lu \n", usecs, time, micros());
 	  time = (long)micros();
 }
 
@@ -326,18 +292,43 @@ int cmap(int value, int from_low, int from_high, int to_low, int to_high) {
 					  (to_low < to_high ? to_high : to_low));
 }
 
-// For debugging purposes - shows display in 8x8 text with space before and after and size of display[][]
+// For debugging purposes - shows current display and border in 10x10 text with space before and after
 void logScreen() {
-	Serial.println();
-	Serial.println(sizeof(display));
+	lprintf("\n");
 	for (int i=0; i<10; i++) {
 		for (int j=0; j<10; ++j) {
 			if (display[i][j]==0)
-			Serial.print(".");
-			else Serial.print((char)display[i][j]);
+			lprintf(".");
+			else lprintf("%c", (char)display[i][j]);
 		}
-		Serial.println();
+		lprintf("\n");
 	}
-	Serial.println();
+	lprintf("xpos: ");
+	Serial.println(xpos);			// TODO why can I not lprintf() floats???
+	lprintf("ypos: ");
+	Serial.println(ypos);			
+	lprintf("x: ");
+	Serial.println(x);
+	lprintf("y: ");
+	Serial.println(y);
+	lprintf("xinc: ");
+	Serial.println(xinc);
+	lprintf("yinc: ");
+	Serial.println(yinc);
+	
 }
+
+// Logging print formatted = printf() to Serial
+void lprintf(char *fmt, ... ) {        //  Source:  http://playground.arduino.cc/Main/Printf
+	if (debugModeOn) {
+		char tmp[128];                       //  resulting string limited to 128 chars
+		va_list args;
+		va_start (args, fmt );
+		vsnprintf(tmp, 128, fmt, args);
+		va_end (args);
+
+		Serial.print(tmp);
+	}
+}
+
 

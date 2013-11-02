@@ -25,10 +25,12 @@ const int xPin = 1;
 const int yPin = 3;
 const int zPin = 5;
 // TODO might want to consider setting these to +- 70 from initial reading for use at an angle...??
-const int minVal = 260;    // min and max values for -90 ro 90 degrees on x and y axis from accelerometer at 3.3v
+const int minVal = 260;    // min and max values for -90 to 90 degrees on x and y axis from accelerometer at 3.3v
 const int maxVal = 400;    // +-70 with 330 being approx level reading last time I checked it
 
-boolean debugModeOn = false;        // opens Serial for lprintf() calls on status, slows program dramatically tho
+//////////////////////////////////////
+boolean debugModeOn = false;        // opens Serial for lprintf() calls on status, slows program dramatically
+//////////////////////////////////////
 
 int logCounter = 0, xOrientation = 0, yOrientation = 0;
 int xpos = -1, ypos = -2;
@@ -40,19 +42,8 @@ int columns[9] = {0,256,4096,2048,1,32,2,1024,32768};   // first 595 - Q0-16 Q1-
 														// second 595 - Q0-9 Q1-5 Q2-6 Q3-7 Q4-8 Q5-12 Q6-11 Q7-10
 
 
-// Maze matrices - char[num rows][num cols] where char is X for obstacle and S is starting point of player
+// Maze matrix - char[num rows][num cols] where char is X for obstacle and S is starting point of player
 // outermost walls will be implied by size of array
-char* littleMaze[8] = {
-	"X000X000",
-	"0x00x000",
-	"000000x0",
-	"xx0000x0",
-	"0000x0x0",
-	"00x0x000",
-	"00x00000",
-	"00x0x000",  };
-
-
 char* board[40] = {
 	"0000000000000000000000000000000000000000",
 	"0000000000000000000000000000000000000000",
@@ -65,14 +56,14 @@ char* board[40] = {
 	"000X000000XXXXXX00000000000X000000000000",
 	"00000000000000X000000000000X000000000000",
 	"00000000000000X0000000000000000000000000",
-	"0000000000000000000000000000000000000000",
-	"0000000000000000000000000000000000000000",
-	"000000000000X00000000000000XXXXX00000000",
-	"00000000000X0000000S00000000000X00XXXX00",
-	"000X000000X0000000XXX0000000000X00000000",
-	"000X00000X00000000000000000XXXXX00000000",
-	"000X0000X000000000000000000X000000000000",
-	"000X00000000000000000000000X000000000000",
+	"0000000000000000XXXXXX000000000000000000",
+	"00000000000000000000XX000000000000000000",
+	"000000000000X000XXX0XXXX000XXXXX00000000",
+	"00000000000X0000XXXS00000000000X00XXXX00",
+	"000X000000X00000XXX0XXXX0000000X00000000",
+	"000X00000X000000XXX00XXX000XXXXX00000000",
+	"000X0000X0000000000XX0XX000X000000000000",
+	"000X000000000000XXXXXX0X000X000000000000",
 	"000X000000XXXXXX00000000000X000000000000",
 	"00000000000000X000000000000X000000000000",
 	"00000000000000X0000000000000000000000000",
@@ -95,24 +86,26 @@ char* board[40] = {
 	"0000000000000X0X000X0X0000000000000000X0",
 	"00000000000000X00000X0000000000000000000",  };
 
-void lprintf(char*, ... );    // prints to Serial for logging when debugModeOn set to TRUE
-void writeToRegisters(int, int);
-void setOrientation();
-void fps(long);
+
+void setup();
+void loop();
+void mazeGame();
+
 void findStart();
 void drawPlayer();
 void drawScreen();
-void drawPlayer();
-int cmap(int, int, int, int, int);
-int orient(int);
-void mazeGame();
-void setup();
-void loop();
 void writeScreen();
-void logScreen();
+void writeToRegisters(int, int);
 void adjustDisplayForMovement();
+
+void setOrientation();
+int orient(int);
+
 boolean goingOffTheDisplay();
 boolean goingToHitSomething();
+boolean inMiddleOfDisplay();
+boolean movingToANewSpace();
+
 void movePlayerForward();
 void movePlayerBack();
 void movePlayerXBack();
@@ -120,11 +113,15 @@ void movePlayerYBack();
 void moveDisplayForward();
 void moveDisplayXForward();
 void moveDisplayYForward();
-boolean inMiddleOfDisplay();
-boolean movingFurtherFromMiddle();
-boolean movingToANewSpace();
+
 void preventSticking();
 void preventXSticking();
 void preventYSticking();
 
+void fps(long);
+int cmap(int, int, int, int, int);
+void logScreen();
+void lprintf(char*, ... );   
+
 #endif /* MAZEGAME_H_ */
+
