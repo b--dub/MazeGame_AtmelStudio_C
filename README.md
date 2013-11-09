@@ -11,6 +11,6 @@ The Fritzing based wiring schematics are located in the Fritzing_Schematics fold
 
 Short 'Quick and Dirty' video demo:
 
-[![Demo Video](http://www.youtube.com/watch?feature=player_embedded&v=J4HjXexkRcM)](http://i1.ytimg.com/vi/J4HjXexkRcM/2.jpg?time=1383978340292)
+[![Demo Video](http://i1.ytimg.com/vi/J4HjXexkRcM/2.jpg?time=1383979363689)](http://www.youtube.com/watch?feature=player_embedded&v=J4HjXexkRcM)
 
 
