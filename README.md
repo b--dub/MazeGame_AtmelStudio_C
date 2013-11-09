@@ -9,6 +9,8 @@ As it sits now, the "Maze Game" doesn't actually have an end point, and the boar
 
 The Fritzing based wiring schematics are located in the Fritzing_Schematics folder
 
-This link is to a short 'Quick and Dirty' video demo:
+Short 'Quick and Dirty' video demo:
 
 [![Demo Video](http://www.youtube.com/watch?feature=player_embedded&v=J4HjXexkRcM)](http://i1.ytimg.com/vi/J4HjXexkRcM/1.jpg?time=1383978340292)
+
+
