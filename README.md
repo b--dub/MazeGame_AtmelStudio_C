@@ -8,3 +8,4 @@ Arduino powered Maze Game with 2x 595 8 bit Shift Registers chained together to 
 As it sits now, the "Maze Game" doesn't actually have an end point, and the board that I've created is more a demo to show speed, maneuverability, and board size than to provide any sort of real maze to work through.  This could easily be changed by altering the board.h 2D array to create a more appropriate board and by adding a check for 'E' or other appropriate character during the drawScreen() process to satisfy ending the game.
 
 The Fritzing based wiring schematics are located in the Fritzing_Schematics folder
+There is a short 'Quick and Dirty' video demo in the Video folder as well
